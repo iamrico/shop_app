@@ -3,15 +3,17 @@ import '../screens/product_detail_screen.dart';
 import 'package:provider/provider.dart';
 import '../providers/product.dart';
 
+
+
 class ProductItem extends StatelessWidget {
   ProductItem();
 
   @override
   Widget build(BuildContext context) {
     //final product = Provider.of<Product>(context); alternative syntax, side note: every time this is called, it runs entire build method again, having consumer is better cuz u can insert precisely where data should change so fewer widgets rebuild
-    //Consumer.of() is used for better widget splitting and rebuilding
+    //Consumer is used for better widget splitting and rebuilding
 	
-    return Consumer(
+    return Consumer<Product>(
 		builder: (ctx, product, child) => ClipRRect(
         	borderRadius: BorderRadius.circular(10),
         	child: GridTile(
