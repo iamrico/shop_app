@@ -5,6 +5,7 @@ import './screens/products_overview_screen.dart';
 import './screens/product_detail_screen.dart';
 import './providers/products_provider.dart';
 import './providers/cart_provider.dart';
+import './providers/orders_provider.dart';
 
 void main() => runApp(MyApp());
 
@@ -18,10 +19,13 @@ class MyApp extends StatelessWidget {
           value:
               Products(), // difference between using ChangeNotifierProvider.value and using builder argument: there is a difference cuz flutter reuses widgets and the .value syntax allows your widgets to attach,persist and keep up with the correct data that is always changing but builder argument and method cannot eg best use case is within grid systems or scrollable lists
         ),
-		ChangeNotifierProvider.value(
+        ChangeNotifierProvider.value(
           //alternative syntax as opposed to using a builder method cuz we dont need context
           value:
               Cart(), // difference between using ChangeNotifierProvider.value and using builder argument: there is a difference cuz flutter reuses widgets and the .value syntax allows your widgets to attach,persist and keep up with the correct data that is always changing but builder argument and method cannot eg best use case is within grid systems or scrollable lists
+        ),
+        ChangeNotifierProvider.value(
+          value: Orders(),
         ),
       ],
       child: MaterialApp(
@@ -34,7 +38,7 @@ class MyApp extends StatelessWidget {
         home: ProductOverviewScreen(),
         routes: {
           ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
-		  CartScreen.routeName: (ctx) => CartScreen(),
+          CartScreen.routeName: (ctx) => CartScreen(),
         },
       ),
     );
