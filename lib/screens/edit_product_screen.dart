@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../providers/product.dart';
+import 'package:provider/provider.dart';
+import '../providers/products_provider.dart';
 
 class EditProductScreen extends StatefulWidget {
   static const routeName = '/edit-product';
@@ -15,6 +17,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _form = GlobalKey<FormState>();
   var _editedProduct =
       Product(id: null, title: '', price: 0, description: '', imageUrl: '');
+
+  var _isInit = true;
+  var _initValues = {
+    'title': '',
+    'description': '',
+    'price': '',
+    'imageUrl': '',
+  };
 
   @override
   void dispose() {
@@ -34,6 +44,28 @@ class _EditProductScreenState extends State<EditProductScreen> {
     super.initState();
   }
 
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    if (_isInit) {
+      final productId = ModalRoute.of(context).settings.arguments as String;
+      if (productId != null) {
+        _editedProduct =
+            Provider.of<Products>(context, listen: false).findById(productId);
+        _initValues = {
+          'title': _editedProduct.title,
+          'description': _editedProduct.description,
+          'price': _editedProduct.price.toString(),
+          // 'imageUrl': _editedProduct.imageUrl,
+        };
+
+        _imageUrlController.text = _editedProduct.imageUrl;
+      }
+    }
+    _isInit = false;
+  }
+
   void updateImageUrl() {
     if (!_imageUrlFocusNode.hasFocus) {
       setState(() {});
@@ -42,8 +74,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   void _saveForm() {
     _form.currentState.validate();
-
     _form.currentState.save();
+
+    if (_editedProduct.id != null) {
+      Provider.of<Products>(context, listen: false)
+          .editProduct(_editedProduct, _editedProduct.id);
+    } else {
+      Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+    }
+
+    Navigator.of(context).pop();
   }
 
   @override
@@ -63,6 +103,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
             child: Column(
               children: <Widget>[
                 TextFormField(
+                  initialValue: _initValues['title'],
                   decoration: InputDecoration(
                     labelText: 'Title',
                   ),
@@ -72,21 +113,24 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   },
                   onSaved: (value) {
                     _editedProduct = Product(
-                        title: value,
-                        price: _editedProduct.price,
-                        description: _editedProduct.description,
-                        imageUrl: _editedProduct.imageUrl,
-                        id: null);
+                      title: value,
+                      price: _editedProduct.price,
+                      description: _editedProduct.description,
+                      imageUrl: _editedProduct.imageUrl,
+                      id: _editedProduct.id,
+                      isFavorite: _editedProduct.isFavorite,
+                    );
                   },
                   validator: (value) {
-                    if(value.isEmpty) {
+                    if (value.isEmpty) {
                       return 'Please Provide a value';
-                    } 
+                    }
 
                     return null;
                   },
                 ),
                 TextFormField(
+                  initialValue: _initValues['price'],
                   decoration: InputDecoration(
                     labelText: 'Price',
                   ),
@@ -98,22 +142,24 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   },
                   onSaved: (value) {
                     _editedProduct = Product(
-                        title: _editedProduct.title,
-                        price: double.parse(value),
-                        description: _editedProduct.description,
-                        imageUrl: _editedProduct.imageUrl,
-                        id: null);
+                      title: _editedProduct.title,
+                      price: double.parse(value),
+                      description: _editedProduct.description,
+                      imageUrl: _editedProduct.imageUrl,
+                      id: _editedProduct.id,
+                      isFavorite: _editedProduct.isFavorite,
+                    );
                   },
                   validator: (value) {
-                    if(value.isEmpty) {
+                    if (value.isEmpty) {
                       return 'Please enter a price';
-                    } 
+                    }
 
                     if (double.tryParse(value) == null) {
                       return 'Please enter a valid number';
                     }
 
-                    if (double.parse(value) <=0) {
+                    if (double.parse(value) <= 0) {
                       return 'Please enter a number greater than zero';
                     }
 
@@ -121,6 +167,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   },
                 ),
                 TextFormField(
+                  initialValue: _initValues['description'],
                   decoration: InputDecoration(
                     labelText: 'Description',
                   ),
@@ -129,18 +176,20 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   focusNode: _descriptionFocusNode,
                   onSaved: (value) {
                     _editedProduct = Product(
-                        title: _editedProduct.title,
-                        price: _editedProduct.price,
-                        description: value,
-                        imageUrl: _editedProduct.imageUrl,
-                        id: null);
+                      title: _editedProduct.title,
+                      price: _editedProduct.price,
+                      description: value,
+                      imageUrl: _editedProduct.imageUrl,
+                      id: _editedProduct.id,
+                      isFavorite: _editedProduct.isFavorite,
+                    );
                   },
-                  validator: (value){
-                    if(value.isEmpty) {
+                  validator: (value) {
+                    if (value.isEmpty) {
                       return 'Please enter a description';
                     }
 
-                    if(value.length > 10) {
+                    if (value.length > 10) {
                       return 'Should be at least 10 characters long';
                     }
 
@@ -182,18 +231,21 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         },
                         onSaved: (value) {
                           _editedProduct = Product(
-                              title: _editedProduct.title,
-                              price: _editedProduct.price,
-                              description: _editedProduct.description,
-                              imageUrl: value,
-                              id: null);
+                            title: _editedProduct.title,
+                            price: _editedProduct.price,
+                            description: _editedProduct.description,
+                            imageUrl: value,
+                            id: _editedProduct.id,
+                            isFavorite: _editedProduct.isFavorite,
+                          );
                         },
                         validator: (value) {
                           if (value.isEmpty) {
                             return 'Please enter an image url';
                           }
 
-                          if ( !value.startsWith('http') && !value.startsWith('https')) {
+                          if (!value.startsWith('http') &&
+                              !value.startsWith('https')) {
                             return 'Please enter a valid URL';
                           }
                           return null;

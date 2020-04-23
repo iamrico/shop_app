@@ -42,10 +42,32 @@ class Products with ChangeNotifier {
   }
 
   List<Product> get favoriteItems {
-    return _items.where((item)=> item.isFavorite == true).toList();
+    return _items.where((item) => item.isFavorite == true).toList();
   }
 
   Product findById(String id) {
-	  return _items.firstWhere((item) => item.id == id);
+    return _items.firstWhere((item) => item.id == id);
+  }
+
+  void addProduct(Product product) {
+    final newProduct = Product(
+      title: product.title,
+      description: product.description,
+      price: product.price,
+      imageUrl: product.imageUrl,
+      id: DateTime.now().toString(),
+    );
+
+    _items.add(newProduct);
+    notifyListeners();
+  }
+
+  void editProduct(Product newProduct, String id) {
+    final prodIndex = _items.indexWhere((prod)=> prod.id == id);
+
+    if(prodIndex >= 0) {
+      _items[prodIndex] = newProduct;
+      notifyListeners();
+    }
   }
 }
