@@ -29,7 +29,7 @@ class AppDrawer extends StatelessWidget {
         Divider(),
         ListTile(leading: Icon(Icons.exit_to_app), title: Text('Logout'),onTap: (){
           Navigator.of(context).pop();
-          // Navigator.of(context).pushReplacementNamed(AuthScreen.routeName);
+          // Navigator.of(context).pushReplacementNamed('/');
           Provider.of<Auth>(context, listen: false).logout();
         }),
       ]),

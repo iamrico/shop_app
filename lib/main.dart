@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import './widgets/spash_screen.dart';
 import './screens/cart_screen.dart';
 import './screens/products_overview_screen.dart';
 import './screens/product_detail_screen.dart';
@@ -24,8 +25,10 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProxyProvider<Auth, Products>(
           create: (_) => Products('empty', [], ''),
-          update: (ctx, auth, previousProducts) => Products(auth.token,
-              previousProducts == null ? [] : previousProducts.items, auth.userId),
+          update: (ctx, auth, previousProducts) => Products(
+              auth.token,
+              previousProducts == null ? [] : previousProducts.items,
+              auth.userId),
         ),
         ChangeNotifierProvider.value(
           //alternative syntax as opposed to using a builder method cuz we dont need context
@@ -33,13 +36,12 @@ class MyApp extends StatelessWidget {
               Cart(), // difference between using ChangeNotifierProvider.value and using builder argument: there is a difference cuz flutter reuses widgets and the .value syntax allows your widgets to attach,persist and keep up with the correct data that is always changing but builder argument and method cannot eg best use case is within grid systems or scrollable lists
         ),
         ChangeNotifierProxyProvider<Auth, Orders>(
-          create: (_) => Orders('empty', [], ''), 
-          update: (_, auth, previousOrders) => Orders(
-              auth.token, previousOrders == null ? [] : previousOrders.orders, auth.userId),
+          create: (_) => Orders('empty', [], ''),
+          update: (_, auth, previousOrders) => Orders(auth.token,
+              previousOrders == null ? [] : previousOrders.orders, auth.userId),
         ),
       ],
       child: Consumer<Auth>(builder: (ctx, auth, child) {
-        print('in main.dart: ${auth.isAuth}');
         return MaterialApp(
           title: 'MyShop',
           theme: ThemeData(
@@ -47,7 +49,11 @@ class MyApp extends StatelessWidget {
               primaryColor: Colors.blueGrey,
               accentColor: Colors.green,
               fontFamily: 'Lato'),
-          home: auth.isAuth ? ProductOverviewScreen() : AuthScreen(),
+          home: auth.isAuth
+              ? ProductOverviewScreen()
+              : FutureBuilder(
+                  future: auth.tryAutoLogin(),
+                  builder: (_, authSnapshot) => authSnapshot.connectionState == ConnectionState.waiting ? SplashScreen() : AuthScreen()),
           routes: {
             ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
             CartScreen.routeName: (ctx) => CartScreen(),

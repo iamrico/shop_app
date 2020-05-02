@@ -29,7 +29,6 @@ class Product with ChangeNotifier {
     try {
       await http.put(url, body: json.encode(isFavorite));
     } catch (e) {
-      print(e.toString());
     }
   }
 }

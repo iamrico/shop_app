@@ -117,7 +117,7 @@ class _AuthCardState extends State<AuthCard> {
             ));
   }
 
-  Future<void> _submit() async {
+  Future<void> _submit(BuildContext context) async {
     if (!_formKey.currentState.validate()) {
       // Invalid!
       return;
@@ -137,8 +137,6 @@ class _AuthCardState extends State<AuthCard> {
         await Provider.of<Auth>(context, listen: false)
             .signup(_authData['email'], _authData['password']);
       }
-
-      Navigator.of(context).pushReplacementNamed('/product-overview');
     } on HttpException catch (e) {
       var errorMsg = "could not authenticate";
 
@@ -177,7 +175,6 @@ class _AuthCardState extends State<AuthCard> {
 
   @override
   Widget build(BuildContext context) {
-    print('rendered Auth Screen');
     final deviceSize = MediaQuery.of(context).size;
     return Card(
       shape: RoundedRectangleBorder(
@@ -242,7 +239,7 @@ class _AuthCardState extends State<AuthCard> {
                   RaisedButton(
                     child:
                         Text(_authMode == AuthMode.Login ? 'LOGIN' : 'SIGN UP'),
-                    onPressed: _submit,
+                    onPressed: () => _submit(context),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
