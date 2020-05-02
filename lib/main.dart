@@ -33,12 +33,13 @@ class MyApp extends StatelessWidget {
               Cart(), // difference between using ChangeNotifierProvider.value and using builder argument: there is a difference cuz flutter reuses widgets and the .value syntax allows your widgets to attach,persist and keep up with the correct data that is always changing but builder argument and method cannot eg best use case is within grid systems or scrollable lists
         ),
         ChangeNotifierProxyProvider<Auth, Orders>(
-          create: (_) => Orders('empty', []), 
+          create: (_) => Orders('empty', [], ''), 
           update: (_, auth, previousOrders) => Orders(
-              auth.token, previousOrders == null ? [] : previousOrders.orders),
+              auth.token, previousOrders == null ? [] : previousOrders.orders, auth.userId),
         ),
       ],
       child: Consumer<Auth>(builder: (ctx, auth, child) {
+        print('in main.dart: ${auth.isAuth}');
         return MaterialApp(
           title: 'MyShop',
           theme: ThemeData(
@@ -54,6 +55,7 @@ class MyApp extends StatelessWidget {
             UserProductsScreen.routeName: (ctx) => UserProductsScreen(),
             EditProductScreen.routeName: (ctx) => EditProductScreen(),
             ProductOverviewScreen.routeName: (ctx) => ProductOverviewScreen(),
+            AuthScreen.routeName: (ctx) => AuthScreen(),
           },
         );
       }),
