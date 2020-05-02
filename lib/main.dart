@@ -23,9 +23,9 @@ class MyApp extends StatelessWidget {
           value: Auth(),
         ),
         ChangeNotifierProxyProvider<Auth, Products>(
-          create: (_) => Products('empty', []),
+          create: (_) => Products('empty', [], ''),
           update: (ctx, auth, previousProducts) => Products(auth.token,
-              previousProducts == null ? [] : previousProducts.items),
+              previousProducts == null ? [] : previousProducts.items, auth.userId),
         ),
         ChangeNotifierProvider.value(
           //alternative syntax as opposed to using a builder method cuz we dont need context
