@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/helpers/custom_route.dart';
 import './widgets/spash_screen.dart';
 import './screens/cart_screen.dart';
 import './screens/products_overview_screen.dart';
@@ -12,6 +13,7 @@ import './screens/user_products_screen.dart';
 import './screens/edit_product_screen.dart';
 import './screens/auth_screen.dart';
 import './providers/auth.dart';
+import './helpers/custom_route.dart';
 
 void main() => runApp(MyApp());
 
@@ -45,15 +47,23 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           title: 'MyShop',
           theme: ThemeData(
-              primarySwatch: Colors.blue,
-              primaryColor: Colors.blueGrey,
-              accentColor: Colors.green,
-              fontFamily: 'Lato'),
+            primarySwatch: Colors.blue,
+            primaryColor: Colors.blueGrey,
+            accentColor: Colors.green,
+            fontFamily: 'Lato',
+            pageTransitionsTheme: PageTransitionsTheme(builders: {
+              TargetPlatform.android: CustomePageTransitionBuilder(),
+              TargetPlatform.iOS: CustomePageTransitionBuilder()
+            }),
+          ),
           home: auth.isAuth
               ? ProductOverviewScreen()
               : FutureBuilder(
                   future: auth.tryAutoLogin(),
-                  builder: (_, authSnapshot) => authSnapshot.connectionState == ConnectionState.waiting ? SplashScreen() : AuthScreen()),
+                  builder: (_, authSnapshot) =>
+                      authSnapshot.connectionState == ConnectionState.waiting
+                          ? SplashScreen()
+                          : AuthScreen()),
           routes: {
             ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
             CartScreen.routeName: (ctx) => CartScreen(),
@@ -82,3 +92,4 @@ class MyHomePage extends StatelessWidget {
     );
   }
 }
+

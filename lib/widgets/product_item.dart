@@ -26,9 +26,13 @@ class ProductItem extends StatelessWidget {
                 arguments: product.id,
               );
             },
-            child: Image.network(
-              product.imageUrl,
-              fit: BoxFit.cover,
+            child: Hero(
+              tag: product.id,
+              child: FadeInImage(
+                placeholder: AssetImage('assets/images/placeholder.png'),
+                image: NetworkImage(product.imageUrl),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           footer: GridTileBar(
@@ -49,9 +53,11 @@ class ProductItem extends StatelessWidget {
                   SnackBar(
                     content: Text('Added Item to Cart'),
                     duration: Duration(seconds: 2),
-                    action: SnackBarAction(label: 'UNDO', onPressed: (){
-                      cart.removeSingleItem(product.id);
-                    }),
+                    action: SnackBarAction(
+                        label: 'UNDO',
+                        onPressed: () {
+                          cart.removeSingleItem(product.id);
+                        }),
                   ),
                 );
               },
